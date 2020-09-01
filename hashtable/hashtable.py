@@ -23,6 +23,7 @@ class HashTable:
     def __init__(self, capacity):
         self.capacity = capacity
         self.table = [None] * capacity
+        self.size = 0
 
 
     def get_num_slots(self):
@@ -46,6 +47,7 @@ class HashTable:
         Implement this.
         """
         # Your code here
+        return self.size / self.capacity
 
 
     def fnv1(self, key):
@@ -71,7 +73,6 @@ class HashTable:
             hash = ((hash << 5) + hash) + ord(x)
         return hash
 
-
     def hash_index(self, key):
         """
         Take an arbitrary key and return a valid integer index
@@ -91,7 +92,27 @@ class HashTable:
         # Your code here
 
         index = self.hash_index(key)
-        self.table[index] = value
+        node = self.table[index]
+
+        if node is None:
+            self.table[index] = HashTableEntry(key, value)
+            self.size += 1
+            if self.get_load_factor() > 0.7:
+                self.resize(len(self.table) * 2)
+
+        else:
+            while node is not None:
+                if node.key == key:
+                    node.value = value
+                    return node.value
+                node = node.next
+            if node is None:
+                next_value = self.table[index]
+                self.table[index] = HashTableEntry(key, value)
+                self.table[index].next = next_value
+                self.size += 1
+                if self.get_load_factor() > 0.7:
+                    self.resize(len(self.table) * 2)
 
 
     def delete(self, key):
@@ -104,7 +125,20 @@ class HashTable:
         """
         # Your code here
         index = self.hash_index(key)
-        self.table[index] = None
+        node = self.table[index]
+
+        if node is None:
+            return None
+        elif node.key == key:
+            self.table[index] = node.next
+            self.size -= 1
+        else:
+            while node.next is not None:
+                if node.next.key == key:
+                    node.next = node.next.next
+                    self.size -= 1
+                    break
+                node = node.next
 
 
     def get(self, key):
@@ -118,10 +152,16 @@ class HashTable:
         # Your code here
 
         index = self.hash_index(key)
+        node = self.table[index]
 
-        if (self.table[index]):
-            return self.table[index]
+        if node is None:
+            return None
         else:
+            while node:
+                if node.key == key:
+                    return node.value
+                else:
+                    node = node.next
             return None
 
 
@@ -133,6 +173,16 @@ class HashTable:
         Implement this.
         """
         # Your code here
+        old_table = self.table
+        self.table = [None] * new_capacity
+        self.capacity = new_capacity
+
+        for ll in old_table:
+            node = ll
+            while node:
+                self.put(node.key, node.value)
+                node = node.next
+
 
 
 
@@ -170,3 +220,4 @@ if __name__ == "__main__":
         print(ht.get(f"line_{i}"))
 
     print("")
+
