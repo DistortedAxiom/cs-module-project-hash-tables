@@ -91,8 +91,15 @@ class HashTable:
         """
         # Your code here
 
+        # Get a hash value from a key and setting it as an index to be accessed
+        # Get the list in the table at that index
+
         index = self.hash_index(key)
         node = self.table[index]
+
+        # If the "node" / "key, value" is None, we can create a new HashTableEntry at that location
+        # Increase the size (number of items) inside the array
+        # If the load factor is greater than 0.7, we want to double the number of slots to prevent it from being too "full"
 
         if node is None:
             self.table[index] = HashTableEntry(key, value)
@@ -100,12 +107,17 @@ class HashTable:
             if self.get_load_factor() > 0.7:
                 self.resize(len(self.table) * 2)
 
+        # If there's something already (which is a linked list node due to our previous condition), execute the below loop
+
         else:
+            #We will iterate through the loop until the pointer reaches the end (None)
             while node is not None:
+                # If the node hash value is the same as the one that is being added
                 if node.key == key:
+                    #If the node key is the same as the key input, we will override the current value of the node key
                     node.value = value
                     return node.value
-                node = node.next
+            #Else, insert key, value at the head of the linked list slot that is empty
             if node is None:
                 next_value = self.table[index]
                 self.table[index] = HashTableEntry(key, value)
@@ -124,21 +136,22 @@ class HashTable:
         Implement this.
         """
         # Your code here
+
+        # Get the hash index of key
+
         index = self.hash_index(key)
         node = self.table[index]
 
-        if node is None:
-            return None
-        elif node.key == key:
-            self.table[index] = node.next
-            self.size -= 1
-        else:
-            while node.next is not None:
-                if node.next.key == key:
-                    node.next = node.next.next
-                    self.size -= 1
-                    break
-                node = node.next
+
+        while node:
+            # Search the list for key
+            if node.key == key:
+                #Delete the node from list
+                self.table[index] = node.next
+                self.size -= 1
+                return node
+            else:
+                return None
 
 
     def get(self, key):
@@ -149,19 +162,20 @@ class HashTable:
 
         Implement this.
         """
-        # Your code here
 
+        # Get the index of the key and list inside the table for that index
         index = self.hash_index(key)
         node = self.table[index]
 
+        # If the node is none, return none
         if node is None:
             return None
         else:
+            # Search the list for that key
             while node:
+                # If found return the value
                 if node.key == key:
                     return node.value
-                else:
-                    node = node.next
             return None
 
 
