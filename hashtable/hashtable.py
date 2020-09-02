@@ -118,6 +118,7 @@ class HashTable:
                     node.value = value
                     return node.value
             #Else, insert key, value at the head of the linked list slot that is empty
+                node = node.next
             if node is None:
                 next_value = self.table[index]
                 self.table[index] = HashTableEntry(key, value)
@@ -146,7 +147,7 @@ class HashTable:
         while node:
             # Search the list for key
             if node.key == key:
-                #Delete the node from list
+                #Delete the node from list by changing the pointer to the next node
                 self.table[index] = node.next
                 self.size -= 1
                 return node
@@ -187,9 +188,15 @@ class HashTable:
         Implement this.
         """
         # Your code here
+
+        # We keep a copy of the old table to put the items in it to the new resized table
+
         old_table = self.table
         self.table = [None] * new_capacity
         self.capacity = new_capacity
+
+        # Go through the linked list of the old table
+        # Put the node to the new table
 
         for ll in old_table:
             node = ll

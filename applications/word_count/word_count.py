@@ -1,6 +1,22 @@
 def word_count(s):
     # Your code here
 
+    punctuation = ['"', ':', ';', ',', '.', '-', '+', '=', '/', '\\', '|', '[', ']', '{', '}', '(', ')', '*', '^', '&']
+
+    for x in punctuation:
+        s = s.replace(x, '')
+
+    words = s.split()
+
+    dict = {}
+
+    for word in words:
+        if word.lower() in dict:
+            dict[word.lower()] += 1
+        else:
+            dict[word.lower()] = 1
+
+    return dict
 
 
 if __name__ == "__main__":
